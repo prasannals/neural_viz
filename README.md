@@ -1,11 +1,10 @@
 # neural_viz
 Visualization for neural networks
 
-### Under development
-
-The aim of the library is to provide a simple interface to visualize the feature representation of Convolutional Neural Networks. This includes support for visualizing a single image as well as visualizing the changes in learned features as you train the network. **Works with PyTorch models**.
+The aim of the library is to provide a simple interface to visualize the feature representation of Convolutional Neural Networks. **Works with PyTorch models**.
 
 ### GradCam classification visualization for a single image 
+
 
 To obtain [GradCam](https://arxiv.org/abs/1610.02391) visualization for a single image use **grad_cam_viz** method
 
@@ -26,4 +25,21 @@ grad_cam_viz(model, layer, x, y, proc_x=None, unproc_x=None):
     '''
 ```
 
-To obtain continous visualizations of images as the model is being trained, use "CV2VisualOutput" or "CV2VisualOutputFromFolder"
+#### Example result after applying grad_cam_viz to a Pneumonia classification problem (y is class 'Pneumonia')- 
+
+![Imgur](https://imgur.com/ZCcHI3X.jpg)
+
+### To visualize both the positive and negative contributions towards the specified class, use "grad_cam_no_relu_viz" method
+
+#### Result obtained by visualizing both positive and negative contributions towards class "pneumonia" (same example as shown above) -
+
+![Imgur](https://imgur.com/mqFD99p.jpg)
+
+
+### Saliency Confusion Matrix
+
+Saliency Confusion Matrix provides a visualization of the positive and negative contributions for both the predicted class as well as the ground truth class. Use the method "grad_cam_saliency_confusion_map" to obtain the Saliency Confusion Matrix.  
+
+#### Saliency Confusion Matrix for the same example explored above - 
+
+![Imgur](https://imgur.com/Ob94q2X.jpg)

@@ -64,7 +64,9 @@ def append_img(x, heatmap):
     return  conc / conc.max() 
 
 def img_heatmap_viz(x, y, pred, heatmap, reshape_map=True, get_cat_name=None):
-    
+    print(f'min={heatmap.min()}')
+    print(f'max={heatmap.max()}')
+    print(f'Posheatmap sum = {heatmap.sum()}')
     heatmap = (heatmap - heatmap.min() ) / heatmap.max()
     heatmap = F.upsample(heatmap, size=(x.shape[-2], x.shape[-1]), mode='bilinear', align_corners=False)
     heatmap = cv2_to_tensor(cv2.applyColorMap(np.uint8(255 * heatmap.cpu().squeeze()), cv2.COLORMAP_JET), device=heatmap.device)
@@ -87,6 +89,9 @@ def img_heatmap_no_relu_viz(x, y, pred, heatmap, reshape_map=True, get_cat_name=
     pos_map = F.relu(heatmap)
     neg_map = torch.abs(heatmap * (heatmap < 0).float())
     min, max = torch.tensor(0., device=heatmap.device).float(), torch.max(pos_map.max(), neg_map.max())
+    print(f'min={min}')
+    print(f'max={max}')
+    print(f'Posheatmap sum = {pos_map.sum()}')
     pos_map = (pos_map - min ) / max 
     neg_map = (neg_map - min ) / max
     pos_map = F.upsample(pos_map, size=(x.shape[-2], x.shape[-1]), mode='bilinear', align_corners=False)
@@ -158,7 +163,7 @@ def layer_based_viz(viz_algo, viz_gen, model, layer, x, y, proc_model_out=None, 
     if y_and_pred:
         model.zero_grad()
         out_pred = model(x[None])
-        loss_pred = out_pred if proc_model_out is None else proc_model_out(out_pred[0], x, y)
+        loss_pred = out_pred if proc_model_out is None else proc_model_out(out_pred[0], x, None)
         loss_pred.backward()
         print(f'Loss = {loss_pred}')
         saliency_map_pred = viz_algo(activations, gradients)
@@ -194,7 +199,7 @@ def grad_cam(activations, gradients, higher_is_better=True, relu=True, grad_mean
     alpha = gradients.mean(dim=(2,3), keepdim=True) if grad_mean else gradients
     alpha = alpha if higher_is_better else (-1 * alpha)
     
-    print(f'activations * alpha = {(alpha * activations).sum()}')
+    # print(f'activations * alpha = {(alpha * activations).sum()}')
 
     saliency_map = (alpha * activations).sum(dim=1, keepdim=True)
     if relu:
